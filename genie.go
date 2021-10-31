@@ -2,6 +2,7 @@ package genie
 
 import (
 	"fmt"
+	"github.com/CloudyKit/jet/v6"
 	"github.com/go-chi/chi/v5"
 	"github.com/i-ms/genie/render"
 	"github.com/joho/godotenv"
@@ -26,6 +27,7 @@ type Genie struct {
 	RootPath string
 	Routes   *chi.Mux
 	Render   *render.Render
+	JetViews *jet.Set
 	config   config
 }
 
@@ -73,6 +75,14 @@ func (g *Genie) New(rootPath string) error {
 		port:     os.Getenv("PORT"),
 		renderer: os.Getenv("RENDERER"),
 	}
+
+	// Loading JetSet (Jet Templates) in genie 
+	var views = jet.NewSet(
+		jet.NewOSFileSystemLoader(fmt.Sprintf("%s/views", rootPath)),
+		jet.InDevelopmentMode(),
+	)
+
+	g.JetViews = views
 
 	g.createRenderer()
 
@@ -133,6 +143,7 @@ func (g *Genie) createRenderer() {
 		Renderer: g.config.renderer,
 		RootPath: g.RootPath,
 		Port:     g.config.port,
+		JetViews: g.JetViews,
 	}
 	g.Render = &myRenderer
 }
