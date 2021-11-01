@@ -15,12 +15,20 @@ func TestRender_Page(t *testing.T) {
 
 	w := httptest.NewRecorder()
 
+	// Testing rendering of pages using go template
 	testRenderer.Renderer = "go"
 	testRenderer.RootPath = "./testdata"
 
-	// Testing rendering of pages using go template
 	err = testRenderer.Page(w, r, "home", nil, nil)
 	if err != nil {
 		t.Error("Error rendering page : ", err)
 	}
+
+	// Testing rendering of pages using jet template
+	testRenderer.Renderer = "jet"
+	err = testRenderer.Page(w, r, "home", nil, nil)
+	if err != nil {
+		t.Error("Error rendering page : ", err)
+	}
+
 }
