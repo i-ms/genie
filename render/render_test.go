@@ -43,4 +43,11 @@ func TestRender_Page(t *testing.T) {
 		t.Error("Error rendering non-existent jet template: ", err)
 	}
 
+	// Testing for invalid renderer
+	testRenderer.Renderer = ""
+	err = testRenderer.Page(w, r, "home", nil, nil)
+	if err == nil {
+		t.Error("No error returned while rendering with invalid renderer: ", err)
+	}
+
 }
