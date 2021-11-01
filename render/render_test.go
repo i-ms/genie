@@ -24,11 +24,23 @@ func TestRender_Page(t *testing.T) {
 		t.Error("Error rendering page : ", err)
 	}
 
+	// Testing for non-existent go template
+	err = testRenderer.Page(w, r, "no-file", nil, nil)
+	if err == nil {
+		t.Error("Error rendering non-existent go template: ", err)
+	}
+
 	// Testing rendering of pages using jet template
 	testRenderer.Renderer = "jet"
 	err = testRenderer.Page(w, r, "home", nil, nil)
 	if err != nil {
 		t.Error("Error rendering page : ", err)
+	}
+
+	// Testing for non-existent jet template
+	err = testRenderer.Page(w, r, "no-file", nil, nil)
+	if err == nil {
+		t.Error("Error rendering non-existent jet template: ", err)
 	}
 
 }
