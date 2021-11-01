@@ -76,7 +76,7 @@ func (g *Genie) New(rootPath string) error {
 		renderer: os.Getenv("RENDERER"),
 	}
 
-	// Loading JetSet (Jet Templates) in genie 
+	// Loading JetSet (Jet Templates) in genie
 	var views = jet.NewSet(
 		jet.NewOSFileSystemLoader(fmt.Sprintf("%s/views", rootPath)),
 		jet.InDevelopmentMode(),

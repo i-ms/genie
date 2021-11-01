@@ -66,7 +66,7 @@ func (ren *Render) GoPage(w http.ResponseWriter, r *http.Request, view string, d
 
 // JetPage renders a template using the Jet Templating engine
 func (ren *Render) JetPage(w http.ResponseWriter, r *http.Request, templateName string, variables, data interface{}) error {
-	
+
 	// DataStructure used by Jet to pass data into template
 	var vars jet.VarMap
 
@@ -88,7 +88,7 @@ func (ren *Render) JetPage(w http.ResponseWriter, r *http.Request, templateName 
 		log.Println(err)
 		return err
 	}
-	
+
 	// Execute template in w
 	if err = t.Execute(w, vars, td); err != nil {
 		log.Println(err)

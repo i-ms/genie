@@ -13,6 +13,6 @@ func (g *Genie) routes() http.Handler {
 	if g.Debug {
 		mux.Use(middleware.Recoverer)
 	}
- 
+
 	return mux
 }
