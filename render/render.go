@@ -33,6 +33,7 @@ type TemplateData struct {
 
 func (ren *Render) Page(w http.ResponseWriter, r *http.Request, view string, variables, data interface{}) error {
 
+	// Choosing the render function according to template specified in env file
 	switch strings.ToLower(ren.Renderer) {
 	case "go":
 		return ren.GoPage(w, r, view, data)
