@@ -48,7 +48,7 @@ func (c *Session) InitSession() *scs.SessionManager {
 	// name of session store
 	switch strings.ToLower(c.SessionType) {
 	case "redis":
-	case "mysql", "marisdb":
+	case "mysql", "mariadb":
 	case "postgres", "postgresql":
 	default:
 	}
