@@ -106,7 +106,7 @@ func (g *Genie) New(rootPath string) error {
 		database: databaseConfig{
 			database: os.Getenv("DATABASE_TYPE"),
 			dsn:      g.BuildDSN(),
-		},
+		},                      
 	}
 
 	// Create session
@@ -155,6 +155,9 @@ func (g *Genie) ListenAndServe() {
 		ReadTimeout:  30 * time.Second,
 		WriteTimeout: 300 * time.Second,
 	}
+	
+	// Closing database connection
+	defer g.DB.Pool.Close()
 
 	g.InfoLog.Printf("Listening on port : %s", os.Getenv("PORT"))
 	err := srv.ListenAndServe()
