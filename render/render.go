@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/CloudyKit/jet/v6"
+	"github.com/alexedwards/scs/v2"
 	"html/template"
 	"log"
 	"net/http"
@@ -17,6 +18,7 @@ type Render struct {
 	Port       string
 	ServerName string
 	JetViews   *jet.Set
+	Session    *scs.SessionManager
 }
 
 type TemplateData struct {

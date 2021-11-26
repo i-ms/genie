@@ -106,7 +106,7 @@ func (g *Genie) New(rootPath string) error {
 		database: databaseConfig{
 			database: os.Getenv("DATABASE_TYPE"),
 			dsn:      g.BuildDSN(),
-		},                      
+		},
 	}
 
 	// Create session
@@ -155,7 +155,7 @@ func (g *Genie) ListenAndServe() {
 		ReadTimeout:  30 * time.Second,
 		WriteTimeout: 300 * time.Second,
 	}
-	
+
 	// Closing database connection
 	defer g.DB.Pool.Close()
 
@@ -190,6 +190,7 @@ func (g *Genie) createRenderer() {
 		RootPath: g.RootPath,
 		Port:     g.config.port,
 		JetViews: g.JetViews,
+		Session:  g.Session,
 	}
 	g.Render = &myRenderer
 }
