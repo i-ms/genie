@@ -11,5 +11,6 @@ coverage:
 	@go test -cover ./...
 
 ## build_cli: builds the command line tool genie and copies it to myapp
+## on windows , the executable is named genie.exe
 build_cli:
-	@go build -o ../myapp/genie ./cmd/cli
+	@go build -o ../genieSample/genie ./cmd/cli

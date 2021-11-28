@@ -33,6 +33,17 @@ type TemplateData struct {
 	Secure          bool
 }
 
+// Adding default template data to each request
+func (ren *Render) defaultData(td *TemplateData, r *http.Request) *TemplateData {
+	td.Secure = ren.Secure
+	td.Port = ren.Port
+	td.ServerName = ren.ServerName
+	if ren.Session.Exists(r.Context(), "userID") {
+		td.IsAuthenticated = true
+	}
+	return td
+}
+
 func (ren *Render) Page(w http.ResponseWriter, r *http.Request, view string, variables, data interface{}) error {
 
 	// Choosing the render function according to template specified in env file
@@ -88,6 +99,9 @@ func (ren *Render) JetPage(w http.ResponseWriter, r *http.Request, templateName 
 	if data != nil {
 		td = data.(*TemplateData)
 	}
+
+	// Adding default data to the template data
+	td = ren.defaultData(td, r)
 
 	// Loading jet template
 	t, err := ren.JetViews.GetTemplate(fmt.Sprintf("%s.jet", templateName))
