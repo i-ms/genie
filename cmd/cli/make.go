@@ -93,13 +93,19 @@ func doMake(arg2, arg3 string) error {
 		if fileExists(fileName) {
 			exitGracefully(errors.New(fileName + " model already exists"))
 		}
-		
+
 		// replacing placeholder with user specified values
 		model = strings.ReplaceAll(model, "$MODELNAME$", strcase.ToCamel(modelName))
 		model = strings.ReplaceAll(model, "$TABLENAME$", tableName)
 
 		// writing data to file
 		err = copyDataToFile([]byte(model), fileName)
+		if err != nil {
+			exitGracefully(err)
+		}
+
+	case "session":
+		err := doSessionTable()
 		if err != nil {
 			exitGracefully(err)
 		}

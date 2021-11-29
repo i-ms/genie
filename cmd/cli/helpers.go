@@ -69,7 +69,9 @@ migrate reset           - rollback all database migrations , and then run all mi
 make migration <name>   - creates two new up and down migrations in migration folder
 make auth  			    - creates and runs migrations for authentication tables, and creates models and middleware    
 make handler <name> 	- creates a stub handler in handler directory
-make model <name> 		- creates a stub model in model directory
+make model <name> 		- creates a stub model in data directory
+make session            - creates a table in database as a session store
+
 
 `)
 }
