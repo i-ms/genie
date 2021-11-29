@@ -3,6 +3,9 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/iancoleman/strcase"
+	"io/ioutil"
+	"strings"
 	"time"
 )
 
@@ -27,7 +30,38 @@ func doMake(arg2, arg3 string) error {
 		if err != nil {
 			exitGracefully(err)
 		}
-	}
 
+	case "auth":
+		err := doAuth()
+		if err != nil {
+			exitGracefully(err)
+		}
+
+	case "handler":
+		if arg3 == "" {
+			exitGracefully(errors.New("please specify handler name"))
+		}
+
+		fileName := gen.RootPath + "/handlers/" + strings.ToLower(arg3) + ".go"
+
+		if fileExists(fileName) {
+			exitGracefully(errors.New(fileName + " handler already exists"))
+		}
+
+		data, err := templateFS.ReadFile("templates/handlers/handler.go.txt")
+		if err != nil {
+			exitGracefully(err)
+		}
+		
+		handler := string(data)
+		handler = strings.ReplaceAll(handler, "$HANDLERNAME$", strcase.ToCamel(arg3))
+
+		err = ioutil.WriteFile(fileName, []byte(handler), 0644)
+		if err != nil {
+			exitGracefully(err)
+		}
+
+	}
+	
 	return nil
 }
