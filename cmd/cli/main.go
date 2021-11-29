@@ -21,33 +21,33 @@ func main() {
 	setup()
 
 	switch arg1 {
-	case "help":
-		showHelp()
-
-	case "version":
-		showVersion()
-
-	case "migrate":
-		if arg2 == "" {
-			arg2 = "up"
-		}
-		err = doMigrate(arg2, arg3)
-		if err != nil {
-			exitGracefully(err)
-		}
-		message = "Migrations executed successfully"
-
-	case "make":
-		if arg2 == "" {
-			exitGracefully(errors.New("make requires a subcommand : (migration | model | handler)"))
-		}
-		if err = doMake(arg2, arg3); err != nil {
-			exitGracefully(err)
-		}
-
-	default:
-		color.Red("Unknown command")
-		showHelp()
+		case "help":
+			showHelp()
+	
+		case "version":
+			showVersion()
+	
+		case "migrate":
+			if arg2 == "" {
+				arg2 = "up"
+			}
+			err = doMigrate(arg2, arg3)
+			if err != nil {
+				exitGracefully(err)
+			}
+			message = "Migrations executed successfully"
+	
+		case "make":
+			if arg2 == "" {
+				exitGracefully(errors.New("make requires a subcommand : (migration | model | handler)"))
+			}
+			if err = doMake(arg2, arg3); err != nil {
+				exitGracefully(err)
+			}
+	
+		default:
+			color.Red("Unknown command")
+			showHelp()
 	}
 
 	exitGracefully(nil, message)
