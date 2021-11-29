@@ -5,6 +5,8 @@ go 1.17
 require (
 	github.com/CloudyKit/fastprinter v0.0.0-20200109182630-33d98a066a53 // indirect
 	github.com/CloudyKit/jet/v6 v6.1.0 // indirect
+	github.com/alexedwards/scs/mysqlstore v0.0.0-20211127072730-b70d0e05030c // indirect
+	github.com/alexedwards/scs/postgresstore v0.0.0-20211127072730-b70d0e05030c // indirect
 	github.com/alexedwards/scs/v2 v2.4.0 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/gertd/go-pluralize v0.1.7 // indirect
