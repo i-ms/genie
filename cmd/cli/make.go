@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/gertd/go-pluralize"
 	"github.com/iancoleman/strcase"
 	"io/ioutil"
 	"strings"
@@ -52,7 +53,7 @@ func doMake(arg2, arg3 string) error {
 		if err != nil {
 			exitGracefully(err)
 		}
-		
+
 		handler := string(data)
 		handler = strings.ReplaceAll(handler, "$HANDLERNAME$", strcase.ToCamel(arg3))
 
@@ -61,7 +62,45 @@ func doMake(arg2, arg3 string) error {
 			exitGracefully(err)
 		}
 
+	case "model":
+		if arg3 == "" {
+			exitGracefully(errors.New("please specify model name"))
+		}
+
+		// read the model template in data
+		data, err := templateFS.ReadFile("templates/data/model.go.txt")
+		if err != nil {
+			exitGracefully(err)
+		}
+
+		// converting data to string
+		// for utilizing it with pluralize
+		model := string(data)
+
+		plur := pluralize.NewClient()
+
+		var modelName = arg3
+		var tableName = arg3
+
+		if plur.IsPlural(arg3) {
+			modelName = plur.Singular(arg3)
+			tableName = strings.ToLower(tableName)
+		} else {
+			tableName = strings.ToLower(plur.Plural(arg3))
+		}
+
+		fileName := gen.RootPath + "/data/" + strings.ToLower(modelName) + ".go"
+
+		// replacing placeholder with user specified values
+		model = strings.ReplaceAll(model, "$MODELNAME$", strcase.ToCamel(modelName))
+		model = strings.ReplaceAll(model, "$TABLENAME$", tableName)
+
+		// writing data to file
+		err = copyDataToFile([]byte(model), fileName)
+		if err != nil {
+			exitGracefully(err)
+		}
 	}
-	
+
 	return nil
 }
