@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/fatih/color"
 	"github.com/i-ms/genie"
-	"log"
 	"os"
 )
 
@@ -13,10 +12,13 @@ const version = "1.0.0"
 var gen genie.Genie
 
 func main() {
+	var message string
 	arg1, arg2, arg3, err := validateInput()
 	if err != nil {
 		exitGracefully(err)
 	}
+
+	setup()
 
 	switch arg1 {
 	case "help":
@@ -25,9 +27,30 @@ func main() {
 	case "version":
 		showVersion()
 
+	case "migrate":
+		if arg2 == "" {
+			arg2 = "up"
+		}
+		err = doMigrate(arg2, arg3)
+		if err != nil {
+			exitGracefully(err)
+		}
+		message = "Migrations executed successfully"
+
+	case "make":
+		if arg2 == "" {
+			exitGracefully(errors.New("make requires a subcommand : (migration | model | handler)"))
+		}
+		if err = doMake(arg2, arg3); err != nil {
+			exitGracefully(err)
+		}
+
 	default:
-		log.Println(arg2, arg3)
+		color.Red("Unknown command")
+		showHelp()
 	}
+
+	exitGracefully(nil, message)
 }
 
 // validateInput validates the input arguments
@@ -42,23 +65,18 @@ func validateInput() (string, string, string, error) {
 		}
 
 		if len(os.Args) >= 4 {
-			arg3 = os.Args[4]
+			arg3 = os.Args[3]
 		}
 	} else {
 		color.Red("Error: No arguments provided")
 		showHelp()
-		return "", "", "", errors.New("no command provided")
+		return "", "", "", errors.New("No command provided")
 	}
 
 	return arg1, arg2, arg3, nil
 }
 
-func showHelp() {
-	color.Yellow(`Available commands
-    help        -   show the help command
-    version     -   print application version`)
-}
-
+// exitGracefully exits the application and provides the error or optional message
 func exitGracefully(err error, msg ...string) {
 	message := ""
 	if len(msg) > 0 {
@@ -78,6 +96,7 @@ func exitGracefully(err error, msg ...string) {
 	os.Exit(0)
 }
 
+// showVersion displays the current application version
 func showVersion() {
 	color.Yellow("Application version: %v", version)
 	return
