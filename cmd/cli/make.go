@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/fatih/color"
 	"github.com/gertd/go-pluralize"
 	"github.com/iancoleman/strcase"
 	"io/ioutil"
@@ -23,6 +24,9 @@ func doMake(arg2, arg3 string) error {
 
 	case "handler":
 		handler(arg3)
+
+	case "helper":
+		helper(arg3)
 
 	case "model":
 		model(arg3)
@@ -121,6 +125,53 @@ func model(arg3 string) {
 
 	// writing data to file
 	err = copyDataToFile([]byte(model), fileName)
+	if err != nil {
+		exitGracefully(err)
+	}
+}
+
+func helper(arg3 string) {
+	if arg3 == "" {
+		exitGracefully(errors.New("please specify type of helper function to be created"))
+	}
+
+	switch arg3 {
+	case "handler":
+		handlerHelper()
+	case "routes":
+		routesHelper()
+	default:
+		exitGracefully(errors.New("invalid helper type"))
+	}
+}
+
+func handlerHelper() {
+	var fileName string
+	color.Blue("Name of file to be created: ")
+	fmt.Scanln(&fileName)
+	targetAddr := fmt.Sprintf("%s/handlers/%s.go", gen.RootPath, fileName)
+
+	if fileExists(targetAddr) {
+		exitGracefully(errors.New(fileName + " already exists"))
+	}
+
+	err := copyFileFromTemplate("templates/handlers/handler-helper.go.txt", targetAddr)
+	if err != nil {
+		exitGracefully(err)
+	}
+}
+
+func routesHelper() {
+	var fileName string
+	color.Blue("Name of file to be created: ")
+	fmt.Scanln(&fileName)
+	targetAddr := fmt.Sprintf("%s/%s.go", gen.RootPath, fileName)
+	
+	if fileExists(targetAddr) {
+		exitGracefully(errors.New(fileName + " already exists"))
+	}
+	
+	err:= copyFileFromTemplate("templates/routes/routes-helper.go.txt", targetAddr)
 	if err != nil {
 		exitGracefully(err)
 	}
