@@ -29,7 +29,7 @@ func (v *Validation) Valid() bool {
 
 // AddError : adds a new error to the Validation struct
 func (v *Validation) AddError(key, message string) {
-	if _, exists := v.Errors[key]; exists {
+	if _, exists := v.Errors[key]; !exists {
 		v.Errors[key] = message
 	}
 }
