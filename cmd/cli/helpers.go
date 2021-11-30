@@ -71,7 +71,7 @@ make auth  			    - creates and runs migrations for authentication tables, and c
 make handler <name> 	- creates a stub handler in handler directory
 make model <name> 		- creates a stub model in data directory
 make session            - creates a table in database as a session store
-
+make helper <name>      - creates helper function for routes | handlers
 
 `)
 }
