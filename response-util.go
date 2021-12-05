@@ -3,7 +3,10 @@ package genie
 import (
 	"encoding/json"
 	"encoding/xml"
+	"fmt"
 	"net/http"
+	"path"
+	"path/filepath"
 )
 
 // WriteJSON writes the data ot json
@@ -48,3 +51,13 @@ func (g *Genie) WriteXML(w http.ResponseWriter, status int, data interface{}, he
 	}
 	return nil
 }
+
+// DownloadFile downloads a file from the given url
+func (g *Genie) DownloadFile(w http.ResponseWriter, r *http.Request, pathToFile, fileName string) error {
+	fp := path.Join(pathToFile, fileName)
+	fileToServe := filepath.Clean(fp)
+	w.Header().Set("Content-Type", fmt.Sprintf("attachment; file=\"%s\"", fileName))
+	http.ServeFile(w, r, fileToServe)
+	return nil
+}
+
