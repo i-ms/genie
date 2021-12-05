@@ -1,7 +1,11 @@
 package genie
 
 import (
+	"crypto/aes"
+	"crypto/cipher"
 	"crypto/rand"
+	"encoding/base64"
+	"io"
 	"os"
 )
 
@@ -49,3 +53,32 @@ func (g *Genie) CreateFileIfNotExists(file string) error {
 	}
 	return nil
 }
+
+type Encryption struct {
+	Key []byte
+}
+
+// Encrypt takes plain text as input and provides the encrypted text
+// along with error if present
+func (e *Encryption) Encrypt(text string) (string, error) {
+	plainText := []byte(text)
+
+	block, err := aes.NewCipher(e.Key)
+	if err != nil {
+		return "", err
+	}
+
+	// data structure to be used for encryption
+	ciphertext := make([]byte, aes.BlockSize+len(text))
+	iv := ciphertext[:aes.BlockSize]
+	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
+		return "", err
+	}
+
+	stream := cipher.NewCFBEncrypter(block, iv)
+	stream.XORKeyStream(ciphertext[aes.BlockSize:], plainText)
+
+	return base64.URLEncoding.EncodeToString(ciphertext), nil
+}
+
+

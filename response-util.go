@@ -32,7 +32,7 @@ func (g *Genie) WriteJSON(w http.ResponseWriter, status int, data interface{}, h
 }
 
 func (g *Genie) WriteXML(w http.ResponseWriter, status int, data interface{}, header ...http.Header) error {
-	out, err := xml.MarshalIndent(data, "", "\t")
+	out, err := xml.MarshalIndent(data, "", "  ")
 	if err != nil {
 		return err
 	}
@@ -56,7 +56,7 @@ func (g *Genie) WriteXML(w http.ResponseWriter, status int, data interface{}, he
 func (g *Genie) DownloadFile(w http.ResponseWriter, r *http.Request, pathToFile, fileName string) error {
 	fp := path.Join(pathToFile, fileName)
 	fileToServe := filepath.Clean(fp)
-	w.Header().Set("Content-Type", fmt.Sprintf("attachment; file=\"%s\"", fileName))
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; file=\"%s\"", fileName))
 	http.ServeFile(w, r, fileToServe)
 	return nil
 }
