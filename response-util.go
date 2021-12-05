@@ -61,3 +61,22 @@ func (g *Genie) DownloadFile(w http.ResponseWriter, r *http.Request, pathToFile,
 	return nil
 }
 
+func (g *Genie) Error404(w http.ResponseWriter, r *http.Request) {
+	g.ErrorStatus(w, http.StatusNotFound)
+}
+
+func (g *Genie) Error500(w http.ResponseWriter, r *http.Request) {
+	g.ErrorStatus(w, http.StatusInternalServerError)
+}
+
+func (g *Genie) ErrorUnauthorized(w http.ResponseWriter, r *http.Request) {
+	g.ErrorStatus(w, http.StatusUnauthorized)
+}
+
+func (g *Genie) ErrorForbidden(w http.ResponseWriter, r *http.Request) {
+	g.ErrorStatus(w, http.StatusForbidden)
+}
+
+func (g *Genie) ErrorStatus(w http.ResponseWriter, status int) {
+	http.Error(w, http.StatusText(status), status)
+}
