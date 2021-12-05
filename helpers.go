@@ -81,4 +81,24 @@ func (e *Encryption) Encrypt(text string) (string, error) {
 	return base64.URLEncoding.EncodeToString(ciphertext), nil
 }
 
+// Decrypt convert's encrypted text to plain text and provides error ( if present )
+func (e *Encryption) Decrypt(cryptoText string) (string, error) {
+	cipherText, _ := base64.URLEncoding.DecodeString(cryptoText)
 
+	block, err := aes.NewCipher(e.Key)
+	if err != nil {
+		return "", nil
+	}
+
+	if len(cipherText) < aes.BlockSize {
+		return "", err
+	}
+
+	iv := cipherText[:aes.BlockSize]
+	cipherText = cipherText[aes.BlockSize:]
+
+	stream := cipher.NewCFBDecrypter(block, iv)
+	stream.XORKeyStream(cipherText, cipherText)
+
+	return string(cipherText), nil
+}
