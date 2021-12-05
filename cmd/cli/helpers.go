@@ -67,6 +67,7 @@ migrate                 - run database migrations
 migrate down            - rollback most recent database migrations
 migrate reset           - rollback all database migrations , and then run all migrations
 make migration <name>   - creates two new up and down migrations in migration folder
+make key                - generates 32 character random string
 make auth  			    - creates and runs migrations for authentication tables, and creates models and middleware    
 make handler <name> 	- creates a stub handler in handler directory
 make model <name> 		- creates a stub model in data directory

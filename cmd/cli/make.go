@@ -13,6 +13,10 @@ import (
 
 func doMake(arg2, arg3 string) error {
 	switch arg2 {
+	case "key":
+		rnd := gen.RandomString(32)
+		color.Yellow("32 character encryption key : %s", rnd)
+
 	case "migration":
 		makeMigration(arg3)
 
@@ -166,12 +170,12 @@ func routesHelper() {
 	color.Blue("Name of file to be created: ")
 	fmt.Scanln(&fileName)
 	targetAddr := fmt.Sprintf("%s/%s.go", gen.RootPath, fileName)
-	
+
 	if fileExists(targetAddr) {
 		exitGracefully(errors.New(fileName + " already exists"))
 	}
-	
-	err:= copyFileFromTemplate("templates/routes/routes-helper.go.txt", targetAddr)
+
+	err := copyFileFromTemplate("templates/routes/routes-helper.go.txt", targetAddr)
 	if err != nil {
 		exitGracefully(err)
 	}
