@@ -21,18 +21,19 @@ const version = "1.0.0"
 // are exported in this type are available to any application
 // that uses it
 type Genie struct {
-	AppName  string
-	Debug    bool
-	Version  string
-	ErrorLog *log.Logger
-	InfoLog  *log.Logger
-	RootPath string
-	Routes   *chi.Mux
-	Render   *render.Render
-	Session  *scs.SessionManager
-	DB       Database
-	JetViews *jet.Set
-	config   config
+	AppName       string
+	Debug         bool
+	Version       string
+	ErrorLog      *log.Logger
+	InfoLog       *log.Logger
+	RootPath      string
+	Routes        *chi.Mux
+	Render        *render.Render
+	Session       *scs.SessionManager
+	DB            Database
+	JetViews      *jet.Set
+	config        config
+	EncryptionKey string
 }
 
 type config struct {
@@ -119,6 +120,7 @@ func (g *Genie) New(rootPath string) error {
 		DBPool:         g.DB.Pool,
 	}
 	g.Session = sess.InitSession()
+	g.EncryptionKey=os.Getenv("KEY")
 
 	// Loading JetSet (Jet Templates) in genie
 	var views = jet.NewSet(
