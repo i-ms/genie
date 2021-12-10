@@ -8,7 +8,7 @@ import (
 type Cache interface {
 	Has(string) (bool, error)
 	Get(string) (interface{}, error)
-	Set(string, interface{}, ...int)
+	Set(string, interface{}, ...int) error
 	Remove(string) error
 	ClearByPattern(string) error
 	Empty() error
@@ -36,4 +36,24 @@ func (c *RedisCache) Has(str string) (bool, error) {
 		return false, err
 	}
 	return ok, nil
+}
+
+func (c *RedisCache) Get(string) (interface{}, error) {
+	return "", nil
+}
+
+func (c *RedisCache) Set(string, interface{}, ...int) error {
+	return nil
+}
+
+func (c *RedisCache) Remove(string) error {
+	return nil
+}
+
+func (c *RedisCache) ClearByPattern(string) error {
+	return nil
+}
+
+func (c *RedisCache) Empty() error {
+	return nil
 }

@@ -5,6 +5,8 @@ import (
 	"github.com/CloudyKit/jet/v6"
 	"github.com/alexedwards/scs/v2"
 	"github.com/go-chi/chi/v5"
+	"github.com/gomodule/redigo/redis"
+	"github.com/i-ms/genie/cache"
 	"github.com/i-ms/genie/render"
 	"github.com/i-ms/genie/session"
 	"github.com/joho/godotenv"
@@ -34,6 +36,7 @@ type Genie struct {
 	JetViews      *jet.Set
 	config        config
 	EncryptionKey string
+	Cache         cache.Cache
 }
 
 type config struct {
@@ -85,6 +88,11 @@ func (g *Genie) New(rootPath string) error {
 			DataType: os.Getenv("DATABASE_TYPE"),
 			Pool:     db,
 		}
+	}
+	
+	if os.Getenv("CACHE")=="redis"{
+		myRedisCache:= g.createClientRedisCache()
+		g.Cache=myRedisCache
 	}
 
 	// Setting debug mode
@@ -202,6 +210,32 @@ func (g *Genie) createRenderer() {
 		Session:  g.Session,
 	}
 	g.Render = &myRenderer
+}
+
+func (g *Genie) createClientRedisCache() *cache.RedisCache {
+	cacheClient := cache.RedisCache{
+		Conn:   g.createRedisPool(),
+		Prefix: g.config.redis.prefix,
+	}
+	return &cacheClient
+}
+
+// createRedisPool: connect to redis and return redis.Pool
+func (g *Genie) createRedisPool() *redis.Pool {
+	return &redis.Pool{
+		MaxIdle:     50,
+		MaxActive:   10000,
+		IdleTimeout: 240 * time.Second,
+		Dial: func() (redis.Conn, error) {
+			return redis.Dial("tcp",
+				g.config.redis.host,
+				redis.DialPassword(g.config.redis.password))
+		},
+		TestOnBorrow: func(conn redis.Conn, t time.Time) error {
+			_, err := conn.Do("PING")
+			return err
+		},
+	}
 }
 
 func (g *Genie) BuildDSN() string {
