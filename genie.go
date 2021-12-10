@@ -42,6 +42,7 @@ type config struct {
 	cookie      cookieConfig
 	sessionType string
 	database    databaseConfig
+	redis       redisConfig
 }
 
 // New reads the .env file, creates our application config, populates the Genie
@@ -108,6 +109,11 @@ func (g *Genie) New(rootPath string) error {
 			database: os.Getenv("DATABASE_TYPE"),
 			dsn:      g.BuildDSN(),
 		},
+		redis: redisConfig{
+			host:     os.Getenv("REDIS_HOST"),
+			password: os.Getenv("REDIS_PASSWORD"),
+			prefix:   os.Getenv("REDIS_PREFIX"),
+		},
 	}
 
 	// Create session
@@ -120,7 +126,7 @@ func (g *Genie) New(rootPath string) error {
 		DBPool:         g.DB.Pool,
 	}
 	g.Session = sess.InitSession()
-	g.EncryptionKey=os.Getenv("KEY")
+	g.EncryptionKey = os.Getenv("KEY")
 
 	// Loading JetSet (Jet Templates) in genie
 	var views = jet.NewSet(
