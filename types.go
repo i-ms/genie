@@ -27,8 +27,15 @@ type databaseConfig struct {
 	database string
 }
 
-// Datatype - type of database (redis/mysql/postgres)
+// Database - type of database (redis/mysql/postgres)
 type Database struct {
 	DataType string
 	Pool     *sql.DB
+}
+
+// redisConfig holds config values for redis
+type redisConfig struct {
+	host     string
+	password string
+	prefix   string
 }
