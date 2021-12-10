@@ -1,6 +1,9 @@
 package cache
 
-import "github.com/gomodule/redigo/redis"
+import (
+	"fmt"
+	"github.com/gomodule/redigo/redis"
+)
 
 type Cache interface {
 	Has(string) (bool, error)
@@ -21,3 +24,16 @@ type RedisCache struct {
 
 // Entry is used to store the cache serialization information
 type Entry map[string]interface{}
+
+// Has return true if value exist in redis else false along with error if any
+func (c *RedisCache) Has(str string) (bool, error) {
+	key := fmt.Sprintf("%s:%s", c.Prefix, str)
+	conn := c.Conn.Get()
+	defer conn.Close()
+
+	ok, err := redis.Bool(conn.Do("EXIST", key))
+	if err != nil {
+		return false, err
+	}
+	return ok, nil
+}
