@@ -1,6 +1,8 @@
 package cache
 
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
 	"github.com/gomodule/redigo/redis"
 )
@@ -30,27 +32,90 @@ func (c *RedisCache) Has(str string) (bool, error) {
 	key := fmt.Sprintf("%s:%s", c.Prefix, str)
 	conn := c.Conn.Get()
 	defer conn.Close()
-
-	ok, err := redis.Bool(conn.Do("EXIST", key))
+	
+	ok, err := redis.Bool(conn.Do("EXISTS", key))
 	if err != nil {
 		return false, err
 	}
 	return ok, nil
 }
 
-func (c *RedisCache) Get(string) (interface{}, error) {
-	return "", nil
+// 
+func encode(item Entry) ([]byte, error) {
+	b := bytes.Buffer{}
+	e := gob.NewEncoder(&b)
+	err := e.Encode(item)
+	if err != nil {
+		return nil, err
+	}
+	return b.Bytes(), nil
 }
 
-func (c *RedisCache) Set(string, interface{}, ...int) error {
+func decode(str string) (Entry, error) {
+	item := Entry{}
+	b := bytes.Buffer{}
+	b.Write([]byte(str))
+	d := gob.NewDecoder(&b)
+	err := d.Decode(&item)
+	if err != nil {
+		return nil, err
+	}
+	return item, nil
+}
+
+// Get return value from redis along with error if any
+func (c *RedisCache) Get(str string) (interface{}, error) {
+	key := fmt.Sprintf("%s:%s", c.Prefix, str)
+	conn := c.Conn.Get()
+	defer conn.Close()
+	
+	cacheEntry, err := redis.Bytes(conn.Do("GET", key))
+	if err != nil {
+		return nil, err
+	}
+	
+	decoded, err := decode(string(cacheEntry))
+	if err != nil {
+		return nil, err
+	}
+	item := decoded[key]
+	return item, nil
+}
+
+func (c *RedisCache) Set(str string, value interface{}, expires ...int) error {
+	key := fmt.Sprintf("%s:%s", c.Prefix, str)
+	conn := c.Conn.Get()
+	defer conn.Close()
+	
+	entry := Entry{}
+	entry[key] = value
+	encoded, err := encode(entry)
+	if err != nil {
+		return err
+	}
+	
+	if len(expires) > 0 {
+		// Set with expiration time
+		_, err := conn.Do("SETEX", key, expires[0], encoded)
+		if err != nil {
+			return err
+		}
+	} else {
+		// if no expire is provided
+		_, err := conn.Do("SET", key, encoded)
+		if err != nil {
+			return err
+		}
+	}
+	
 	return nil
 }
 
-func (c *RedisCache) Remove(string) error {
+func (c *RedisCache) Remove(str string) error {
 	return nil
 }
 
-func (c *RedisCache) ClearByPattern(string) error {
+func (c *RedisCache) ClearByPattern(str string) error {
 	return nil
 }
 

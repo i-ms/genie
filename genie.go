@@ -2,6 +2,12 @@ package genie
 
 import (
 	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"strconv"
+	"time"
+
 	"github.com/CloudyKit/jet/v6"
 	"github.com/alexedwards/scs/v2"
 	"github.com/go-chi/chi/v5"
@@ -10,11 +16,6 @@ import (
 	"github.com/i-ms/genie/render"
 	"github.com/i-ms/genie/session"
 	"github.com/joho/godotenv"
-	"log"
-	"net/http"
-	"os"
-	"strconv"
-	"time"
 )
 
 const version = "1.0.0"
@@ -49,8 +50,9 @@ type config struct {
 }
 
 // New reads the .env file, creates our application config, populates the Genie
-// type with settings based on .env values, and creates necessary folders and
+// struct with settings based on .env values, and creates necessary folders and
 // files if they don't exist
+// rootPath is the root directory of application using genie
 func (g *Genie) New(rootPath string) error {
 	pathConfig := initPaths{
 		rootPath:    rootPath,
@@ -89,10 +91,10 @@ func (g *Genie) New(rootPath string) error {
 			Pool:     db,
 		}
 	}
-	
-	if os.Getenv("CACHE")=="redis"{
-		myRedisCache:= g.createClientRedisCache()
-		g.Cache=myRedisCache
+
+	if os.Getenv("CACHE") == "redis" {
+		myRedisCache := g.createClientRedisCache()
+		g.Cache = myRedisCache
 	}
 
 	// Setting debug mode
